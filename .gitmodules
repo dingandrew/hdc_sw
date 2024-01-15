@@ -1,0 +1,3 @@
+[submodule "onlinehd"]
+	path = onlinehd
+	url = https://github.com/BIASLab-UCI/onlinehd.git
