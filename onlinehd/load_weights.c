@@ -10,7 +10,7 @@ int main() {
     fp = fopen("test.bin", "r");
     if (fp == NULL) {
         printf("failed to open file\n");
-        return 0;
+        return 1;
     }
 
     // read floats from bin
