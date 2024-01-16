@@ -42,7 +42,7 @@ def generate_weights_bin(path: str, model: OnlineHD) -> None :
     # dim 4000 by default
     # model is classes x dim tensor
     with open(path, mode='wb') as f:
-        f.write(model.model.numpy().tobytes())
+        f.write(model.model.numpy(force=True).tobytes())
 
 
 def load_weights_bin(path: str, classes: int, dim: int) -> torch.Tensor:
