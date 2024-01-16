@@ -8,6 +8,8 @@ import numpy as np
 
 import onlinehd
 
+from data import generate_bin_2d, load_bin_2d, generate_bin_1d, load_bin_1d
+
 # loads simple mnist dataset
 def load():
     # fetches data
@@ -57,6 +59,12 @@ def main():
     print(f'{acc = :6f}')
     print(f'{acc_test = :6f}')
     print(f'{t = :6f}')
+
+    print("Saving model attributes...")
+    generate_bin_2d("weights.bin", model.model)
+    generate_bin_2d("encoder-basis.bin", model.encoder.basis)
+    generate_bin_1d("encoder-base.bin", model.encoder.base)
+
 
 if __name__ == '__main__':
     main()
