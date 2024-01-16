@@ -32,9 +32,8 @@ def generate_data_header(path: str, n: int, x: torch.Tensor, y: torch.Tensor) ->
         f.write('};\n')
 
 
-def generate_bin_2d(path: str, arr: torch.Tensor) -> None :
-    '''Dump a 2d tensor of floats in a binary file. The file consists solely of
-    the raw data'''
+def generate_bin_2d(path: str, arr: torch.Tensor, dtype='f') -> None :
+    '''Dump a 2d tensor in a binary file. The file consists solely of the raw data'''
     # 10 classes 0-9
     # 784 features - pixel data
     # dim 4000 by default
@@ -42,12 +41,11 @@ def generate_bin_2d(path: str, arr: torch.Tensor) -> None :
     with open(path, mode='wb') as f:
         for row in arr:
             for n in row:
-                f.write(struct.pack('f', n))
+                f.write(struct.pack(dtype, n))
 
 
-def load_bin_2d(path: str, arr: torch.Tensor) -> None:
-    '''load a 2d tensor bin into `arr` assuming float32 dtype. The file should
-    be the raw data'''
+def load_bin_2d(path: str, arr: torch.Tensor, dtype='f') -> None:
+    '''load a 2d tensor bin into `arr`. The file should be the raw data'''
     rows, cols = arr.shape
     with open(path, mode='rb') as f:
         for i in range(rows):
@@ -55,21 +53,20 @@ def load_bin_2d(path: str, arr: torch.Tensor) -> None:
                 b = f.read(4)
                 if len(b) < 4:
                     break
-                arr[i][j], = struct.unpack('f', b)
+                arr[i][j], = struct.unpack(dtype, b)
 
-def generate_bin_1d(path: str, arr: torch.Tensor) -> None:
-    '''Dump a 1d tensor of floats in a binary file. The file consists solely of
+def generate_bin_1d(path: str, arr: torch.Tensor, dtype='f') -> None:
+    '''Dump a 1d tensor in a binary file. The file consists solely of
     the raw data'''
     with open(path, mode='wb') as f:
         for n in arr:
-            f.write(struct.pack('f', n))
+            f.write(struct.pack(dtype, n))
 
-def load_bin_1d(path: str, arr: torch.Tensor) -> None:
-    '''load a 1d tensor bin into `arr` assuming float32 dtype. The file should
-    be the raw data'''
+def load_bin_1d(path: str, arr: torch.Tensor, dtype='f') -> None:
+    '''load a 1d tensor bin into `arr`. The file should be the raw data'''
     with open(path, mode='rb') as f:
         for i in range(*arr.shape):
             b = f.read(4)
             if len(b) < 4:
                 break
-            arr[i], = struct.unpack('f', b)
+            arr[i], = struct.unpack(dtype, b)
