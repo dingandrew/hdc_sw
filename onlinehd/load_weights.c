@@ -19,12 +19,13 @@ int main() {
             // read float32
             int read = fread(&weights[i][j], 4, 1, fp);
             if (read != 1) {
-                printf("error reading only read %d bytes\n", read);
+                printf("error: only read %d floats of %d\n", i * j - 1, CLASSES*DIM);
                 fclose(fp);
                 return 1;
             }
         }
     }
+    fclose(fp);
 
     for (int i = 0; i < CLASSES; ++i) {
         for (int j = 0; j < DIM; ++j) {
