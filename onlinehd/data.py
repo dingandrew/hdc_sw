@@ -32,27 +32,44 @@ def generate_data_header(path: str, n: int, x: torch.Tensor, y: torch.Tensor) ->
         f.write('};\n')
 
 
-def generate_weights_bin(path: str, model: OnlineHD) -> None :
-    '''
-    Dump the weights in a binary file. The file consists solely of
-    the raw data
-    '''
+def generate_bin_2d(path: str, arr: torch.Tensor) -> None :
+    '''Dump a 2d tensor of floats in a binary file. The file consists solely of
+    the raw data'''
     # 10 classes 0-9
     # 784 features - pixel data
     # dim 4000 by default
     # model is classes x dim tensor
     with open(path, mode='wb') as f:
-        f.write(model.model.numpy(force=True).tobytes())
+        for row in arr:
+            for n in row:
+                f.write(struct.pack('f', n))
 
 
-def load_weights_bin(path: str, classes: int, dim: int) -> torch.Tensor:
-    '''load weights bin into a classesxdim tensor assuming float32 dtype'''
-    arr = torch.empty(classes, dim)
+def load_bin_2d(path: str, arr: torch.Tensor) -> None:
+    '''load a 2d tensor bin into `arr` assuming float32 dtype. The file should
+    be the raw data'''
+    rows, cols = arr.shape
     with open(path, mode='rb') as f:
-        for i in range(classes):
-            for j in range(dim):
+        for i in range(rows):
+            for j in range(cols):
                 b = f.read(4)
                 if len(b) < 4:
                     break
                 arr[i][j], = struct.unpack('f', b)
-    return arr
+
+def generate_bin_1d(path: str, arr: torch.Tensor) -> None:
+    '''Dump a 1d tensor of floats in a binary file. The file consists solely of
+    the raw data'''
+    with open(path, mode='wb') as f:
+        for n in arr:
+            f.write(struct.pack('f', n))
+
+def load_bin_1d(path: str, arr: torch.Tensor) -> None:
+    '''load a 1d tensor bin into `arr` assuming float32 dtype. The file should
+    be the raw data'''
+    with open(path, mode='rb') as f:
+        for i in range(*arr.shape):
+            b = f.read(4)
+            if len(b) < 4:
+                break
+            arr[i], = struct.unpack('f', b)
