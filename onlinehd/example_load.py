@@ -32,6 +32,12 @@ def main():
     acc = (y == yhat).float().mean()
     print(f'{acc = :6f}')
 
+    with open('weightspy.txt', mode='w') as f:
+        for arr in model.model:
+            for n in arr:
+                f.write(f'{n:6f} ')
+            f.write('\n')
+
 
 if __name__ == '__main__':
     main()
