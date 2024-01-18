@@ -209,6 +209,34 @@ void OnlineHD_iterative_fit(OnlineHD* onlineHD, float* h, float* y, float lr, in
 
 void OnlineHD_to(OnlineHD* onlineHD, ...) {
     // convert model and encoder to new device
+    //testing git branch, will be changed tomorrow 
+    // if (newType == onlineHD->currentType) {
+    //     // No change needed
+    //     return;
+    // }
+
+    // if (newType == double) {
+    //     // Convert from float to double
+    //     double* newModel = (double*)malloc(onlineHD->classes * onlineHD->dim * sizeof(double));
+    //     for (int i = 0; i < onlineHD->classes * onlineHD->dim; ++i) {
+    //         newModel[i] = (double)onlineHD->model[i];
+    //     }
+    //     free(onlineHD->model);
+    //     onlineHD->model = newModel;
+    //     onlineHD->currentType = double;
+    // } else if (newType == float) {
+    //     // Convert from double to float
+    //     float* newModel = (float*)malloc(onlineHD->classes * onlineHD->dim * sizeof(float));
+    //     for (int i = 0; i < onlineHD->classes * onlineHD->dim; ++i) {
+    //         newModel[i] = (float)onlineHD->model[i];
+    //     }
+    //     free(onlineHD->model);
+    //     onlineHD->model = newModel;
+    //     onlineHD->currentType = float;
+    // }
+
+    // Also convert the encoder, if necessary
+    // ...
 }
 
 void OnlineHD_free(OnlineHD* onlineHD) {
