@@ -1,4 +1,4 @@
-#include "fasthd.h"
+#include "../includes/fasthd.h"
 
 float cos(float* x, float* xs, float* out, int x_size, int xs_size) {
     // Calculate dot product

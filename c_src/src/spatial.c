@@ -1,4 +1,4 @@
-#include "spatial.h"
+#include "../includes/spatial.h"
 
 float cos_cdist(float* x1, float* x2, int size, float eps) {
     float norms1 = 0.0;
