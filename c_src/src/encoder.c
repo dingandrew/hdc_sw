@@ -1,144 +1,99 @@
-
 #include "../includes/encoder.h"
 
-Encoder* create_encoder(int features, int dim) {
-    Encoder* encoder = malloc(sizeof(Encoder));
-    // Error handling 
-    if (encoder == NULL) 
-    {
-        return NULL; 
-    }
-    encoder->dim = dim;
-    encoder->features = features;
-    encoder->basis = malloc(dim * features * sizeof(float));
-    encoder->base = malloc(dim * sizeof(float));
-
-    // Random initialization
+void create_encoder(Encoder *encoder) 
+{
     srand(time(NULL));
-    //for basis (by standard deviation)
-    for (int i = 0; i < dim * features; ++i) 
-    {
-        encoder->basis[i] = (float)rand() / RAND_MAX * 2.0 - 1.0; // Normal distribution approximation
+    //set up the inital encode 
+    for (int i = 0; i < DIM * FEATURES; ++i) {
+        encoder->basis[i] = (float)rand() / RAND_MAX * 2.0 - 1.0;
     }
-    //for base (by 0-2pi)
-    for (int i = 0; i < dim; ++i) 
-    {
+    for (int i = 0; i < DIM; ++i) {
         encoder->base[i] = (float)rand() / RAND_MAX * 2.0 * M_PI;
     }
-    return encoder;
 }
-
-void destroy_encoder(Encoder* encoder) {
-    free(encoder->basis);
-    free(encoder->base);
-    free(encoder);
-}
-
-void encoder_call(Encoder* encoder, float* x, int n, float* h) {
+//encode: the encoder created; x: input data; n: number of data points; h:output
+void encoder_call(Encoder* encoder, float* x, int n, float h[][DIM]) 
+//encode: the encoder created; x: input data; n: number of data points; h:output
+{
     int bsize = ceil(0.01 * n);
-    float* temp = malloc(bsize * encoder->dim * sizeof(float));
-    // Handle memory allocation error
-    if (temp == NULL) 
-    {
-        return;
-    }
-    // for (int i = 0; i < n; i += bsize) {
-    //     for (int j = 0; j < bsize; j++) {
-    //         for (int k = 0; k < encoder->features; k++) {
-    //             temp[j * encoder->dim + k] = 0.0;
-    //             for (int l = 0; l < encoder->dim; l++) {
-    //                 temp[j * encoder->dim + k] += x[(i + j) * encoder->features + l] * encoder->basis[l * encoder->features + k];
-    //             }
-    //         }
-    //     }
-        
-    //     for (int j = 0; j < bsize; j++) {
-    //         for (int k = 0; k < encoder->dim; k++) {
-    //             h[(i + j) * encoder->dim + k] = temp[j * encoder->dim + k] + encoder->base[k];
-    //             h[(i + j) * encoder->dim + k] = cos(h[(i + j) * encoder->dim + k]) * sin(temp[j * encoder->dim + k]);
-    //         }
-    //     }
-    // }
-    
-    // free(temp);
+    float temp[bsize * DIM];
+
     for (int i = 0; i < n; i += bsize) 
     {
         int current_batch_size = fmin(bsize, n - i);
         // Reset temp to zero for each batch
-        for (int j = 0; j < current_batch_size * encoder->dim; j++) 
+        for (int j = 0; j < current_batch_size * DIM; j++) 
         {
             temp[j] = 0.0;
+            
         }
         // Matrix multiplication
         for (int j = 0; j < current_batch_size; j++) 
         {
-            for (int k = 0; k < encoder->dim; k++) 
+            for (int k = 0; k < DIM; k++) 
             {
-                for (int l = 0; l < encoder->features; l++) 
+                for (int l = 0; l < FEATURES; l++) 
                 {
-                    temp[j * encoder->dim + k] += x[(i + j) * encoder->features + l] * encoder->basis[k * encoder->features + l];
+                    temp[j * DIM + k] += x[(i + j) * FEATURES + l] * encoder->basis[k * FEATURES + l];
                 }
             }
         }
-
         // Applying cosine and sine functions
         for (int j = 0; j < current_batch_size; j++) 
         {
-            for (int k = 0; k < encoder->dim; k++) 
+            for (int k = 0; k < DIM; k++) 
             {
-                float dot_product = temp[j * encoder->dim + k];
-                h[(i + j) * encoder->dim + k] = cos(dot_product + encoder->base[k]) * sin(dot_product);
+                float dot_product = temp[j * DIM + k];
+                float base_value = encoder->base[k];
+                h[i + j][k] = cos(dot_product + base_value) * sin(dot_product);
             }
         }
     }
-    free(temp);
 }
 
-void encoder_to(Encoder* encoder, int* args) {
-    free(encoder->basis);
-    free(encoder->base);
-    encoder->basis = malloc(encoder->dim * encoder->features * sizeof(float));
-    encoder->base = malloc(encoder->dim * sizeof(float));
-}
-
-// int main()
-// {
-//     // Sample test data
-//     float test_input[][2] = {{1.0, 2.0}, {3.0, 4.0}}; // 2D input data
-//     int num_data_points = sizeof(test_input) / sizeof(test_input[0]);
-//     int input_features = 2; // Number of features in the input data
-//     int encoded_dim = 6;    // Dimensionality of the encoded space
-
-//     // Initialize the encoder
-//     Encoder* my_encoder = create_encoder(input_features, encoded_dim);
-//     if (my_encoder == NULL) {
-//         fprintf(stderr, "Failed to create encoder\n");
-//         return 1;
-//     }
-
-//     // Allocate memory for the encoded output
-//     float* encoded_output = (float*)malloc(num_data_points * encoded_dim * sizeof(float));
-//     if (encoded_output == NULL) {
-//         fprintf(stderr, "Failed to allocate memory for encoded output\n");
-//         destroy_encoder(my_encoder);
-//         return 1;
-//     }
-
-//     // Encode the data
-//     encoder_call(my_encoder, (float*)test_input, num_data_points, encoded_output);
-
-//     // Print the encoded output
-//     for (int i = 0; i < num_data_points; ++i) {
-//         printf("Encoded data point %d: ", i);
-//         for (int j = 0; j < encoded_dim; ++j) {
-//             printf("%f ", encoded_output[i * encoded_dim + j]);
-//         }
-//         printf("\n");
-//     }
-
-//     // Clean up
-//     free(encoded_output);
-//     destroy_encoder(my_encoder);
-
-//     return 0;
+// might not be useful right now
+// void encoder_to(Encoder* encoder, int* args) {
+//     free(encoder->basis);
+//     free(encoder->base);
+//     encoder->basis = malloc(encoder->dim * encoder->features * sizeof(float));
+//     encoder->base = malloc(encoder->dim * sizeof(float));
 // }
+
+/* used for testing can be deleted
+int main()
+{
+    // Sample test data
+    float data[3][FEATURES];
+    // Seed the random number generator
+    srand(time(NULL));
+    // Generate random data
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < FEATURES; ++j) {
+            data[i][j] = (float)rand() / RAND_MAX;  // Generate a float between 0 and 1
+        }
+    }
+    int num_data_points = sizeof(data) / sizeof(data[0]);
+
+    // Initialize the encoder
+    Encoder *encoder = malloc(sizeof(Encoder));
+    if (encoder == NULL) {
+        fprintf(stderr, "Failed to allocate memory for encoder\n");
+        return 1;
+    }
+    create_encoder(encoder);
+    
+    // created encoded output
+    float encoded_output[num_data_points][DIM];
+    // Encode the data
+    encoder_call(encoder,(float *) data, num_data_points, encoded_output);
+    for (int i = 0; i < num_data_points; ++i) {
+        printf("Encoded data point %d: ", i);
+        for (int j = 0; j < DIM; ++j) {
+            printf("encoded_output[%d][%d]: %f\n", i, j, encoded_output[i][j]);
+        }
+        printf("\n");
+    }
+    free(encoder);
+    return 0;
+}
+/*
