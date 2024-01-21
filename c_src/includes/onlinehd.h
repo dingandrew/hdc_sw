@@ -1,30 +1,27 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
-
 #include "encoder.h"
 #include "spatial.h"
-
+//#include "fasthd.h"
+#define CLASSES 10
+#define DIM 4000
+#define FEATRUES 748
 
 typedef struct {
-    int classes;
-    int dim;
-    Encoder encoder;
-    float* model;
+    Encoder *encoder;
+    float model[CLASSES][DIM];
 } OnlineHD;
 
-OnlineHD* OnlineHD_init(int classes, int features, int dim);
+OnlineHD* OnlineHD_init();
 
-int OnlineHD_call(OnlineHD* onlineHD, float* x, bool encoded);
+void OnlineHD_call(OnlineHD* onlineHD, float* x,int n,float h[][DIM], float dist[][CLASSES], int predictions[n]);//bool encoded
 
-int OnlineHD_predict(OnlineHD* onlineHD, float* x, bool encoded);
+int OnlineHD_predict(OnlineHD* onlineHD, float* x,int n,float h[][DIM], float dist[][CLASSES]); //bool encoded
 
 float* OnlineHD_probabilities(OnlineHD* onlineHD, float* x, bool encoded);
 
-float* OnlineHD_scores(OnlineHD* onlineHD, float* x, bool encoded);
-
-float* Encoder_encode(Encoder* encoder, float* x);
-
+void OnlineHD_scores(OnlineHD* onlineHD, float* x, int n, float h[][DIM], float dist[][CLASSES]); //bool encoded
 void OnlineHD_fit(OnlineHD* onlineHD, float* x, float* y, bool encoded, float lr, int epochs, int batch_size, bool one_pass_fit, float bootstrap);
 
 
@@ -36,9 +33,9 @@ void OnlineHD_iterative_fit(OnlineHD* onlineHD, float* h, float* y, float lr, in
 
 void OnlineHD_to(OnlineHD* onlineHD, ...);
 
-Encoder* Encoder_init(int features, int dim);
+Encoder* Encoder_init();
 
-float* Encoder_encode(Encoder* encoder, float* x);
+void Encoder_encode(Encoder* encoder, float* x, int n, float h[][DIM]) ;
 
 void Encoder_free(Encoder* encoder);
 

@@ -1,3 +1,4 @@
+
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
@@ -13,8 +14,6 @@ typedef struct {
 
 void create_encoder(Encoder *encoder);
 
-void destroy_encoder(Encoder* encoder);
-
-
 void encoder_call(Encoder* encoder, float* x, int n, float h[][DIM]);
-void encoder_to(Encoder* encoder, int* args);
+//void encoder_to(Encoder* encoder, int* args);
+

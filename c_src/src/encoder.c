@@ -59,41 +59,41 @@ void encoder_call(Encoder* encoder, float* x, int n, float h[][DIM])
 //     encoder->base = malloc(encoder->dim * sizeof(float));
 // }
 
-/* used for testing can be deleted
-int main()
-{
-    // Sample test data
-    float data[3][FEATURES];
-    // Seed the random number generator
-    srand(time(NULL));
-    // Generate random data
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < FEATURES; ++j) {
-            data[i][j] = (float)rand() / RAND_MAX;  // Generate a float between 0 and 1
-        }
-    }
-    int num_data_points = sizeof(data) / sizeof(data[0]);
 
-    // Initialize the encoder
-    Encoder *encoder = malloc(sizeof(Encoder));
-    if (encoder == NULL) {
-        fprintf(stderr, "Failed to allocate memory for encoder\n");
-        return 1;
-    }
-    create_encoder(encoder);
+//used for testing can be deleted
+// int main()
+// {
+//     // Sample test data
+//     float data[3][FEATURES];
+//     // Seed the random number generator
+//     srand(time(NULL));
+//     // Generate random data
+//     for (int i = 0; i < 3; ++i) {
+//         for (int j = 0; j < FEATURES; ++j) {
+//             data[i][j] = (float)rand() / RAND_MAX;  // Generate a float between 0 and 1
+//         }
+//     }
+//     int num_data_points = sizeof(data) / sizeof(data[0]);
+
+//     // Initialize the encoder
+//     Encoder *encoder = malloc(sizeof(Encoder));
+//     if (encoder == NULL) {
+//         fprintf(stderr, "Failed to allocate memory for encoder\n");
+//         return 1;
+//     }
+//     create_encoder(encoder);
     
-    // created encoded output
-    float encoded_output[num_data_points][DIM];
-    // Encode the data
-    encoder_call(encoder,(float *) data, num_data_points, encoded_output);
-    for (int i = 0; i < num_data_points; ++i) {
-        printf("Encoded data point %d: ", i);
-        for (int j = 0; j < DIM; ++j) {
-            printf("encoded_output[%d][%d]: %f\n", i, j, encoded_output[i][j]);
-        }
-        printf("\n");
-    }
-    free(encoder);
-    return 0;
-}
-/*
+//     // created encoded output
+//     float encoded_output[num_data_points][DIM];
+//     // Encode the data
+//     encoder_call(encoder,(float *) data, num_data_points, encoded_output);
+//     for (int i = 0; i < num_data_points; ++i) {
+//         printf("Encoded data point %d: ", i);
+//         for (int j = 0; j < DIM; ++j) {
+//             printf("encoded_output[%d][%d]: %f\n", i, j, encoded_output[i][j]);
+//         }
+//         printf("\n");
+//     }
+//     free(encoder);
+//     return 0;
+// }
