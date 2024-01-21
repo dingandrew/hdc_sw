@@ -49,6 +49,8 @@ For more examples, see the `example.py` script. Be aware that this script needs
 `pytorch`, `sklearn` and `numpy` to run.
 
 
+## DATA CONVERTER - ERIC
+
 First run `example.py` to train and save the model and a few test vectors.
 Running `example_load.py` will load the saved model and test it on the saved test vectors. The model weights are also put into a file `weightspy.txt`
 Compile and run `load_weights.c`
