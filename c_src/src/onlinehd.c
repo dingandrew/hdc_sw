@@ -26,6 +26,7 @@ void OnlineHD_call(OnlineHD* onlineHD, float* x,int n,float h[][DIM], float dist
             }
         }
         predictions[i] = maxIndex;
+        printf("max index is %d \n",predictions[i] = maxIndex);
     }
 }
 
@@ -63,91 +64,6 @@ void OnlineHD_scores(OnlineHD* onlineHD, float* x, int n, float h[][DIM], float 
         cos_cdist(h, n, onlineHD->model, CLASSES, dist);
     }
 }
-
-// void OnlineHD_fit(OnlineHD* onlineHD, float* x, float* y, bool encoded, float lr, int epochs, int batch_size, bool one_pass_fit, float bootstrap) {
-//     float* h = encoded ? x : Encoder_encode(onlineHD->encoder, x);
-//     if (one_pass_fit) {
-//         OnlineHD_one_pass_fit(onlineHD, h, y, lr, bootstrap);
-//     }
-//     OnlineHD_iterative_fit(onlineHD, h, y, lr, epochs, batch_size);
-//     free(h);
-// }
-
-// void OnlineHD_one_pass_fit(OnlineHD* onlineHD, float* h, float* y, float lr, float bootstrap) {
-//     if (bootstrap == 'single-per-class') {
-//         int* idxs = malloc(onlineHD->classes * sizeof(int));
-//         for (int i = 0; i < onlineHD->classes; i++) {
-//             idxs[i] = y[i] == i;
-//         }
-//         int banned = idxs[0];
-//         for (int i = 1; i < onlineHD->classes; i++) {
-//             if (idxs[i] > banned) {
-//                 banned = idxs[i];
-//             }
-//         }
-//         for (int i = 0; i < onlineHD->dim; i++) {
-//             onlineHD->model[banned * onlineHD->dim + i] += h[i] * lr;
-//         }
-//         free(idxs);
-//     } else {
-//         int cut = ceil(bootstrap * onlineHD->dim);
-//         float* h_ = malloc(cut * sizeof(float));
-//         float* y_ = malloc(cut * sizeof(float));
-//         for (int i = 0; i < cut; i++) {
-//             h_[i] = h[i];
-//             y_[i] = y[i];
-//         }
-//         for (int lbl = 0; lbl < onlineHD->classes; lbl++) {
-//             for (int i = 0; i < cut; i++) {
-//                 if (y_[i] == lbl) {
-//                     for (int j = 0; j < onlineHD->dim; j++) {
-//                         onlineHD->model[lbl * onlineHD->dim + j] += h_[i * onlineHD->dim + j] * lr;
-//                     }
-//                 }
-//             }
-//         }
-//         int* banned = malloc(cut * sizeof(int));
-//         for (int i = 0; i < cut; i++) {
-//             banned[i] = i;
-//         }
-//         int n = onlineHD->dim;
-//         bool* todo = malloc(n * sizeof(bool));
-//         for (int i = 0; i < n; i++) {
-//             todo[i] = true;
-//         }
-//         for (int i = 0; i < cut; i++) {
-//             todo[banned[i]] = false;
-//         }
-//         float* h_ = malloc(n * sizeof(float));
-//         float* y_ = malloc(n * sizeof(float));
-//         int* onePassIdxs = malloc(n * sizeof(int));
-//         int onePassIdxsSize = 0;
-//         for (int i = 0; i < n; i++) {
-//             if (todo[i]) {
-//                 h_[onePassIdxsSize] = h[i];
-//                 y_[onePassIdxsSize] = y[i];
-//                 onePassIdxs[onePassIdxsSize] = i;
-//                 onePassIdxsSize++;
-//             }
-//         }
-//         OnlineHD_onepass(h_, y_, onlineHD->model, lr, onePassIdxs, onePassIdxsSize);
-//         free(banned);
-//         free(todo);
-//         free(h_);
-//         free(y_);
-//         free(onePassIdxs);
-//     }
-// }
-
-// void OnlineHD_onepass(float* h, float* y, float* model, float lr, int* onePassIdxs, int onePassIdxsSize) {
-//     for (int i = 0; i < onePassIdxsSize; i++) {
-//         int idx = onePassIdxs[i];
-//         int lbl = y[idx];
-//         for (int j = 0; j < onlineHD->dim; j++) {
-//             model[lbl * onlineHD->dim + j] += h[idx * onlineHD->dim + j] * lr;
-//         }
-//     }
-// }
 
 void OnlineHD_iterative_fit(OnlineHD* onlineHD, float* x, float h[][DIM],int n, int y[], float lr, int epochs, int batch_size, float dist[][CLASSES], bool encoded) 
 {
@@ -227,35 +143,17 @@ void OnlineHD_iterative_fit(OnlineHD* onlineHD, float* x, float h[][DIM],int n, 
 
 // void OnlineHD_to(OnlineHD* onlineHD, ...) {
 //     // convert model and encoder to new device
-//     //testing git branch, will be changed tomorrow 
-//     // if (newType == onlineHD->currentType) {
-//     //     // No change needed
-//     //     return;
-//     // }
-
-//     // if (newType == double) {
-//     //     // Convert from float to double
-//     //     double* newModel = (double*)malloc(onlineHD->classes * onlineHD->dim * sizeof(double));
-//     //     for (int i = 0; i < onlineHD->classes * onlineHD->dim; ++i) {
-//     //         newModel[i] = (double)onlineHD->model[i];
-//     //     }
-//     //     free(onlineHD->model);
-//     //     onlineHD->model = newModel;
-//     //     onlineHD->currentType = double;
-//     // } else if (newType == float) {
-//     //     // Convert from double to float
-//     //     float* newModel = (float*)malloc(onlineHD->classes * onlineHD->dim * sizeof(float));
-//     //     for (int i = 0; i < onlineHD->classes * onlineHD->dim; ++i) {
-//     //         newModel[i] = (float)onlineHD->model[i];
-//     //     }
-//     //     free(onlineHD->model);
-//     //     onlineHD->model = newModel;
-//     //     onlineHD->currentType = float;
-//     // }
-
-//     // Also convert the encoder, if necessary
-//     // ...
 // }
+
+float calculate_accuracy(int* true_labels, int* predictions, int n) {
+    int correct = 0;
+    for (int i = 0; i < n; i++) {
+        if (true_labels[i] == predictions[i]) {
+            correct++;
+        }
+    }
+    return (float)correct / n; // Return the proportion of correct predictions
+}
 
 void OnlineHD_free(OnlineHD* onlineHD) {
     free(onlineHD->encoder);

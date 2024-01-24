@@ -47,6 +47,7 @@ int main(int argc, char const *argv[])
     Encoder_encode(test->encoder,(float *)x,n,h);
     //train the model
     OnlineHD_iterative_fit(test,(float *)x,h,n,y,lr,epochs,batch_size,dist,false);
+    OnlineHD_call(test, (float *)x, n, h, dist, predictions, false);
     //check encoder
     // printf("Testing Encoder\n");
     // for (int i = 0; i < n; ++i) {
@@ -76,6 +77,9 @@ int main(int argc, char const *argv[])
     //         printf("model is %f",test->model[i][j]);
     //     }
     // }
+    // Calculate accuracy
+    // float accuracy = calculate_accuracy(y, predictions, n);
+    // printf("Accuracy of the model: %.2f%%\n", accuracy * 100);
 
     OnlineHD_free(test);
     return 0;
