@@ -16,13 +16,15 @@ int main(int argc, char const *argv[])
     // for (int i = 0; i < /* number of data points */; i++) {
     //     printf("Prediction for data point %d: %d\n", i, predictions[i]);
     // }
-    float x[3][DIM];
+    float x[50][DIM];
+    int y[50];
     //input x
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 50; i++)
     {
         for (int j = 0; j < DIM; j++)
         {
             x[i][j] = (float)rand() / RAND_MAX;
+            y[i] = rand() % CLASSES; // Random label
         }
     }
     int n = sizeof(x) / sizeof(x[0]);
@@ -34,32 +36,47 @@ int main(int argc, char const *argv[])
             test->model[i][j] = (float)rand() / RAND_MAX;
         }
     }
+    //initialize 
+    int batch_size = 10;
+    int epochs = 5;
+    float lr = 0.01; 
     float h[n][DIM];
-    float dist[n][CLASSES];
+    float dist[batch_size][CLASSES];
     int predictions[n];
-    OnlineHD_call(test,(float *)x,n,h,dist,predictions);
+    //encode the data first 
+    Encoder_encode(test->encoder,(float *)x,n,h);
+    //train the model
+    OnlineHD_iterative_fit(test,(float *)x,h,n,y,lr,epochs,batch_size,dist,false);
     //check encoder
-    printf("Testing Encoder\n");
-    for (int i = 0; i < n; ++i) {
-        printf("Encoded data point %d: ", i);
-        for (int j = 0; j < DIM; ++j) {
-            printf("encoded_output[%d][%d]: %f\n", i, j, h[i][j]);
-        }
-        printf("\n");
-    }
+    // printf("Testing Encoder\n");
+    // for (int i = 0; i < n; ++i) {
+    //     printf("Encoded data point %d: ", i);
+    //     for (int j = 0; j < DIM; ++j) {
+    //         printf("encoded_output[%d][%d]: %f\n", i, j, h[i][j]);
+    //     }
+    //     printf("\n");
+    // }
     //check cdist
-    printf("Testing Cdist\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < CLASSES; j++) {
-            printf("Similarity between vector %d in x1 and vector %d in x2: %.8f\n", i, j, dist[i][j]);
-        }
-    }
+    // printf("Testing Cdist\n");
+    // for (int i = 0; i < n; i++) {
+    //     for (int j = 0; j < CLASSES; j++) {
+    //         printf("Similarity between vector %d in x1 and vector %d in x2: %.8f\n", i, j, dist[i][j]);
+    //     }
+    // }
     // check maximum score 
-    printf("Testing OnlineHD_Call\n");
-    for (int i = 0; i < n; i++) 
-    {
-        printf("%d\n",predictions[i]);
-    }
-    
+    // printf("Testing OnlineHD_Call\n");
+    // for (int i = 0; i < n; i++) 
+    // {
+    //     printf("%d\n",predictions[i]);
+    // }
+    // for (int i = 0; i < CLASSES; i++) 
+    // {
+    //     for (int j = 0; j < DIM; j++) 
+    //     {
+    //         printf("model is %f",test->model[i][j]);
+    //     }
+    // }
+
+    OnlineHD_free(test);
     return 0;
 }
