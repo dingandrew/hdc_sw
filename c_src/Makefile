@@ -1,9 +1,9 @@
 all: test
 
 test: test_main.o onlinehd.o encoder.o spatial.o
-	gcc -o test test_main.o onlinehd.o encoder.o spatial.o
+	gcc -o test test_main.o onlinehd.o encoder.o spatial.o -lm
 
-encoder.o: src/encoder.c includes/encoder.h
+encoder.o: src/encoder.c includes/encoder.h 
 	gcc -c src/encoder.c
 
 spatial.o: src/spatial.c includes/spatial.h
