@@ -48,6 +48,18 @@ torch.Size([1000])
 For more examples, see the `example.py` script. Be aware that this script needs
 `pytorch`, `sklearn` and `numpy` to run.
 
+
+## DATA CONVERTER - ERIC
+
+First run `example.py` to train and save the model and a few test vectors.
+Running `example_load.py` will load the saved model and test it on the saved test vectors. The model weights are also put into a file `weightspy.txt`
+Compile and run `load_weights.c`
+```
+gcc -o load_weights load_weights.c
+./load_weights
+```
+This will load from the saved weights and output as text to `weightsc.txt` which should be identical to `weightspy.txt`
+
 ## Citation Request
 
 If you use onlinehd code, please cite the following paper:

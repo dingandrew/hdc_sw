@@ -1,3 +1,4 @@
+import pathlib
 from time import time
 
 import torch
@@ -7,6 +8,8 @@ import sklearn.model_selection
 import numpy as np
 
 import onlinehd
+
+from data import generate_bin_2d, generate_bin_1d
 
 # loads simple mnist dataset
 def load():
@@ -30,11 +33,18 @@ def load():
 
 # simple OnlineHD training
 def main():
+    pathlib.Path('./bin').mkdir(exist_ok=True)
     print('Loading...')
     x, x_test, y, y_test = load()
     classes = y.unique().size(0)
     features = x.size(1)
     model = onlinehd.OnlineHD(classes, features)
+
+    print('Saving dataset samples...')
+    x_view = x_test[0:5]
+    y_view = y_test[0:5]
+    generate_bin_2d('./bin/x.bin', x_view)
+    generate_bin_1d('./bin/y.bin', y_view, 'i')
 
     if torch.cuda.is_available():
         x = x.cuda()
@@ -57,6 +67,12 @@ def main():
     print(f'{acc = :6f}')
     print(f'{acc_test = :6f}')
     print(f'{t = :6f}')
+
+    print("Saving model attributes...")
+    generate_bin_2d("./bin/weights.bin", model.model)
+    generate_bin_2d("./bin/encoder-basis.bin", model.encoder.basis)
+    generate_bin_1d("./bin/encoder-base.bin", model.encoder.base)
+
 
 if __name__ == '__main__':
     main()
