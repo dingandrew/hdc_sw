@@ -10,11 +10,12 @@ int load_bin(char *path, char *arr, size_t data_size, size_t n);
 
 int main() {
     float weights[CLASSES][DIM];
-    if (load_bin("./bin/weights.bin", (char*)weights, 4, CLASSES*DIM) == 1) {
+    if (load_bin("../bin/weights.bin", (char*)weights, 4, CLASSES*DIM) == 1) {
         return 1;
     }
+    
     FILE *fp;
-    fp = fopen("weightsc.txt", "w");
+    fp = fopen("weightsnotme.txt", "w");
     for (int i = 0; i < CLASSES; ++i) {
         for (int j = 0; j < DIM; ++j) {
             fprintf(fp, "%f ", weights[i][j]);
@@ -26,7 +27,7 @@ int main() {
 
 int load_bin(char *path, char *arr, size_t data_size, size_t n) {
     FILE *fp;
-    fp = fopen(path, "r");
+    fp = fopen(path, "rb");
     if (fp == NULL) {
         printf("failed to open file\n");
         return 1;
@@ -38,6 +39,14 @@ int load_bin(char *path, char *arr, size_t data_size, size_t n) {
         int read = fread(&arr[i * data_size], data_size, 1, fp);
         if (read != 1) {
             printf("error: only read %d floats of %ld\n", i - 1, n);
+            if (feof(fp))
+            {
+                printf("reached eof\n");
+            }
+            else if (ferror(fp))
+            {
+                perror(NULL);
+            }
             fclose(fp);
             return 1;
         }

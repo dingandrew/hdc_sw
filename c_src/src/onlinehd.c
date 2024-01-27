@@ -26,7 +26,7 @@ void OnlineHD_call(OnlineHD* onlineHD, float* x,int n,float h[][DIM], float dist
             }
         }
         predictions[i] = maxIndex;
-        printf("max index is %d \n",predictions[i] = maxIndex);
+        //printf("max index is %d \n",predictions[i] = maxIndex);
     }
 }
 
@@ -54,7 +54,7 @@ void OnlineHD_scores(OnlineHD* onlineHD, float* x, int n, float h[][DIM], float 
     if (!encoded)
     {
         //encode the data
-        printf("encoding\n");
+        printf("Encoding\n");
         Encoder_encode(onlineHD->encoder, x,n ,h);
         //calculate the cos similarity 
         cos_cdist(h, n, onlineHD->model, CLASSES, dist);

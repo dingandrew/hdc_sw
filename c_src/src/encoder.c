@@ -2,14 +2,38 @@
 
 void create_encoder(Encoder *encoder) 
 {
-    srand(time(NULL));
-    //set up the inital encode 
-    for (int i = 0; i < DIM * FEATURES; ++i) {
-        encoder->basis[i] = (float)rand() / RAND_MAX * 2.0 - 1.0;
+    FILE *Basis = fopen("../bin/encoder-basis.bin", "rb"); // Open the file in binary read mode
+    if (Basis == NULL) {
+        perror("Error opening file");
+        return;
     }
-    for (int i = 0; i < DIM; ++i) {
-        encoder->base[i] = (float)rand() / RAND_MAX * 2.0 * M_PI;
+
+    // Read data for encoder->basis
+    size_t readItems = fread(encoder->basis, sizeof(float), DIM * FEATURES, Basis);
+    if (readItems != DIM * FEATURES) {
+        perror("Error reading basis data");
+        fclose(Basis);
+        return;
     }
+
+    fclose(Basis); // Close the file
+
+    // Open the file for encoder->base
+    FILE *Base = fopen("../bin/encoder-base.bin", "rb");
+    if (Base == NULL) {
+        perror("Error opening base file");
+        return;
+    }
+
+    // Read data for encoder->base
+    size_t readItemsBase = fread(encoder->base, sizeof(float), DIM, Base);
+    if (readItemsBase != DIM) {
+        perror("Error reading base data");
+        fclose(Base);
+        return;
+    }
+
+    fclose(Base); // Close the base file
 }
 //encode: the encoder created; x: input data; n: number of data points; h:output
 void encoder_call(Encoder* encoder, float* x, int n, float h[][DIM]) 
@@ -61,39 +85,47 @@ void encoder_call(Encoder* encoder, float* x, int n, float h[][DIM])
 
 
 //used for testing can be deleted
-// int main()
-// {
-//     // Sample test data
-//     float data[3][FEATURES];
-//     // Seed the random number generator
-//     srand(time(NULL));
-//     // Generate random data
-//     for (int i = 0; i < 3; ++i) {
-//         for (int j = 0; j < FEATURES; ++j) {
-//             data[i][j] = (float)rand() / RAND_MAX;  // Generate a float between 0 and 1
-//         }
-//     }
-//     int num_data_points = sizeof(data) / sizeof(data[0]);
+/*
+int main()
+{
+    // Sample test data
+    float data[3][FEATURES];
+    // Seed the random number generator
+    srand(time(NULL));
+    // Generate random data
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < FEATURES; ++j) {
+            data[i][j] = (float)rand() / RAND_MAX;  // Generate a float between 0 and 1
+        }
+    }
+    int num_data_points = sizeof(data) / sizeof(data[0]);
 
-//     // Initialize the encoder
-//     Encoder *encoder = malloc(sizeof(Encoder));
-//     if (encoder == NULL) {
-//         fprintf(stderr, "Failed to allocate memory for encoder\n");
-//         return 1;
-//     }
-//     create_encoder(encoder);
-    
-//     // created encoded output
-//     float encoded_output[num_data_points][DIM];
-//     // Encode the data
-//     encoder_call(encoder,(float *) data, num_data_points, encoded_output);
-//     for (int i = 0; i < num_data_points; ++i) {
-//         printf("Encoded data point %d: ", i);
-//         for (int j = 0; j < DIM; ++j) {
-//             printf("encoded_output[%d][%d]: %f\n", i, j, encoded_output[i][j]);
-//         }
-//         printf("\n");
-//     }
-//     free(encoder);
-//     return 0;
-// }
+    // Initialize the encoder
+    Encoder *encoder = malloc(sizeof(Encoder));
+    if (encoder == NULL) {
+        fprintf(stderr, "Failed to allocate memory for encoder\n");
+        return 1;
+    }
+    create_encoder(encoder);
+    //set up the inital encode 
+    for (int i = 0; i < DIM * FEATURES; ++i) {
+        printf("Basis is %f\n",encoder->basis[i]); 
+    }
+    for (int i = 0; i < DIM; ++i) {
+        printf("Basis is %f\n",encoder->base[i]); 
+    }
+    // created encoded output
+    float encoded_output[num_data_points][DIM];
+    // Encode the data
+    // encoder_call(encoder,(float *) data, num_data_points, encoded_output);
+    // for (int i = 0; i < num_data_points; ++i) {
+    //     printf("Encoded data point %d: ", i);
+    //     for (int j = 0; j < DIM; ++j) {
+    //         printf("encoded_output[%d][%d]: %f\n", i, j, encoded_output[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+    free(encoder);
+    return 0;
+}
+*/
