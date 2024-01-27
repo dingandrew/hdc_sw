@@ -26,7 +26,7 @@ int main(int argc, char const *argv[])
         perror("Memory allocation failed");
         return 1;
     }
-    fclose(datax);
+    
     // Now read the data into the array
     datax = fopen("../bin/x.bin", "rb");
     if (datax == NULL) {

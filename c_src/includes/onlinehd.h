@@ -8,6 +8,9 @@
 #define DIM 4000
 #define FEATRUES 748
 
+#include <stdio.h>
+#include <stdlib.h>
+
 typedef struct {
     Encoder *encoder;
     float model[CLASSES][DIM];
