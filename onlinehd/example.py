@@ -18,6 +18,9 @@ def load():
     x = x.astype(np.float64)
     y = y.astype(np.int64)
 
+    print("x", x)
+    print("y", y)
+
     # split and normalize
     x, x_test, y, y_test = sklearn.model_selection.train_test_split(x, y)
     scaler = sklearn.preprocessing.Normalizer().fit(x)
@@ -29,6 +32,10 @@ def load():
     y = torch.from_numpy(np.asarray(y)).long()
     x_test = torch.from_numpy(np.asarray(x_test)).float()
     y_test = torch.from_numpy(np.asarray(y_test)).long()
+    print("x", x.size())
+    print("y", y.size())
+    print("xt", x_test.size())
+    print("xt", y_test.size())
     return x, x_test, y, y_test
 
 # simple OnlineHD training
@@ -41,8 +48,8 @@ def main():
     model = onlinehd.OnlineHD(classes, features)
 
     print('Saving dataset samples...')
-    x_view = x_test[0:5]
-    y_view = y_test[0:5]
+    x_view = x_test[0:100]
+    y_view = y_test[0:100]
     generate_bin_2d('./bin/x.bin', x_view)
     generate_bin_1d('./bin/y.bin', y_view, 'i')
 

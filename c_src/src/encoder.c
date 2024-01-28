@@ -75,14 +75,6 @@ void encoder_call(Encoder* encoder, float* x, int n, float h[][DIM])
     }
 }
 
-// might not be useful right now
-// void encoder_to(Encoder* encoder, int* args) {
-//     free(encoder->basis);
-//     free(encoder->base);
-//     encoder->basis = malloc(encoder->dim * encoder->features * sizeof(float));
-//     encoder->base = malloc(encoder->dim * sizeof(float));
-// }
-
 
 //used for testing can be deleted
 /*
