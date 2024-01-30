@@ -14,6 +14,6 @@ typedef struct {
 
 void create_encoder(Encoder *encoder);
 
-void encoder_call(Encoder* encoder, float* x, int n, float h[][DIM]);
+void encoder_call(Encoder* encoder, float x[][FEATURES], int n, float h[][DIM]);
 //void encoder_to(Encoder* encoder, int* args);
 

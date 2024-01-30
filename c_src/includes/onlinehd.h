@@ -18,13 +18,13 @@ typedef struct {
 
 OnlineHD* OnlineHD_init();
 
-void OnlineHD_call(OnlineHD* onlineHD, float* x,int n,float h[][DIM], float dist[][CLASSES], int predictions[n], bool encoded);//bool encoded
+void OnlineHD_call(OnlineHD* onlineHD, float x[][FEATURES],int n,float h[][DIM], float dist[][CLASSES], int predictions[n], bool encoded);//bool encoded
 
 //int OnlineHD_predict(OnlineHD* onlineHD, float* x,int n,float h[][DIM], float dist[][CLASSES]); //bool encoded
 
 //float* OnlineHD_probabilities(OnlineHD* onlineHD, float* x, bool encoded);
 
-void OnlineHD_scores(OnlineHD* onlineHD, float* x, int n, float h[][DIM], float dist[][CLASSES], bool encoded);
+void OnlineHD_scores(OnlineHD* onlineHD, float x[][FEATURES], int n, float h[][DIM], float dist[][CLASSES], bool encoded);
 
 
 void OnlineHD_iterative_fit(OnlineHD* onlineHD, float* x, float h[][DIM],int n, int y[], float lr, int epochs, int batch_size, float dist[][CLASSES], bool encoded);
@@ -32,7 +32,7 @@ void OnlineHD_iterative_fit(OnlineHD* onlineHD, float* x, float h[][DIM],int n, 
 
 Encoder* Encoder_init();
 
-void Encoder_encode(Encoder* encoder, float* x, int n, float h[][DIM]) ;
+void Encoder_encode(Encoder* encoder, float x[][FEATURES], int n, float h[][DIM]) ;
 
 void OnlineHD_free(OnlineHD* onlineHD);
 

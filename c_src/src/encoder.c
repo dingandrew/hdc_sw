@@ -36,7 +36,7 @@ void create_encoder(Encoder *encoder)
     fclose(Base); // Close the base file
 }
 //encode: the encoder created; x: input data; n: number of data points; h:output
-void encoder_call(Encoder* encoder, float* x, int n, float h[][DIM]) 
+void encoder_call(Encoder* encoder, float x[][FEATURES], int n, float h[][DIM]) 
 //encode: the encoder created; x: input data; n: number of data points; h:output
 {
     int bsize = ceil(0.01 * n);
@@ -58,7 +58,7 @@ void encoder_call(Encoder* encoder, float* x, int n, float h[][DIM])
             {
                 for (int l = 0; l < FEATURES; l++) 
                 {
-                    temp[j * DIM + k] += x[(i + j) * FEATURES + l] * encoder->basis[k * FEATURES + l];
+                    temp[j * DIM + k] += x[i + j][l] * encoder->basis[k * FEATURES + l];
                 }
             }
         }

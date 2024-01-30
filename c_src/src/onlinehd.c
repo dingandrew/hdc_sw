@@ -13,8 +13,8 @@ OnlineHD* OnlineHD_init() {
 }
 //use this directly as predict
 //onlineHD: the object; x:input data; n:number of data points; h:encoded data; dist:cos sim; predictions: output prediction label
-void OnlineHD_call(OnlineHD* onlineHD, float* x,int n,float h[][DIM], float dist[][CLASSES], int predictions[n], bool encoded) {
-    OnlineHD_scores(onlineHD,(float *)x,n,h,dist,encoded);
+void OnlineHD_call(OnlineHD* onlineHD, float x[][FEATURES],int n,float h[][DIM], float dist[][CLASSES], int predictions[n], bool encoded) {
+    OnlineHD_scores(onlineHD,x,n,h,dist,encoded);
 
     for (int i = 0; i < n; i++) {
         int maxIndex = 0;
@@ -26,7 +26,6 @@ void OnlineHD_call(OnlineHD* onlineHD, float* x,int n,float h[][DIM], float dist
             }
         }
         predictions[i] = maxIndex;
-        //printf("max index is %d \n",predictions[i] = maxIndex);
     }
 }
 
@@ -49,7 +48,7 @@ void OnlineHD_call(OnlineHD* onlineHD, float* x,int n,float h[][DIM], float dist
 //     return probabilities;
 // }
 //onlineHD: the object; x:input data; n:number of data points; h:encoded data; dist:cos sim;
-void OnlineHD_scores(OnlineHD* onlineHD, float* x, int n, float h[][DIM], float dist[][CLASSES], bool encoded) 
+void OnlineHD_scores(OnlineHD* onlineHD, float x[][FEATURES], int n, float h[][DIM], float dist[][CLASSES], bool encoded) 
 {
     if (!encoded)
     {
@@ -105,6 +104,7 @@ void OnlineHD_iterative_fit(OnlineHD* onlineHD, float* x, float h[][DIM],int n, 
 
                 // Determine if the prediction is wrong
                 wrong[j] = y[i + j] != y_pred[j];
+                printf("wrong j is %d",j);
 
                 // Calculate alpha1 and alpha2
                 alpha1[j] = 1.0 - dist[j][y[i + j]];
@@ -123,7 +123,7 @@ void OnlineHD_iterative_fit(OnlineHD* onlineHD, float* x, float h[][DIM],int n, 
                             for (int k = 0; k < DIM; k++) 
                             {
                                 onlineHD->model[lbl][k] += lr * alpha1[j] * h[i + j][k];
-                                //printf("update is %d\n",k);
+                                //printf("lbl is %d, k is %d, update is %f * %f\n", lbl, k,alpha1[j], h[i + j][k] );
                             }
                         }
                         if (y_pred[j] == lbl) 
@@ -131,6 +131,7 @@ void OnlineHD_iterative_fit(OnlineHD* onlineHD, float* x, float h[][DIM],int n, 
                             for (int k = 0; k < DIM; k++) 
                             {
                                 onlineHD->model[lbl][k] += lr * alpha2[j] * h[i + j][k];
+                                //printf("lbl is %d, k is %d, update is %f * %f\n", lbl, k,alpha2[j], h[i + j][k] );
                             }
                         }
                     }
@@ -166,9 +167,9 @@ Encoder* Encoder_init() {
     return(encoder);
 }
 //onlineHD: the object; x:input data; n:number of data points; h:encoded data
-void Encoder_encode(Encoder* encoder, float* x, int n, float h[][DIM]) 
+void Encoder_encode(Encoder* encoder, float x[][FEATURES], int n, float h[][DIM]) 
 {
     // encode x
-    encoder_call(encoder,(float *) x, n, h);
+    encoder_call(encoder, x , n, h);
 }
 
