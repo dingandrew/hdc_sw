@@ -1,19 +1,19 @@
+
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
+
+#define FEATURES 784
+#define DIM 4000
 
 typedef struct {
-    int dim;
-    int features;
-    float* basis;
-    float* base;
+    float basis[DIM * FEATURES];
+    float base[DIM];
 } Encoder;
 
-Encoder* create_encoder(int features, int dim);
+void create_encoder(Encoder *encoder);
 
+void encoder_call(Encoder* encoder, float x[][FEATURES], int n, float h[][DIM]);
+//void encoder_to(Encoder* encoder, int* args);
 
-void destroy_encoder(Encoder* encoder);
-
-
-void encoder_call(Encoder* encoder, float* x, int n, float* h);
-
-void encoder_to(Encoder* encoder, int* args);
