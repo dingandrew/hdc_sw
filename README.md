@@ -7,7 +7,7 @@ python -m venv env
 pip install -r requirements.txt
 
 
-## To Run the Vicuna Sanoty Test
+## To Run the Vicuna Sanity Test
 
 source env_setup.sh
 
