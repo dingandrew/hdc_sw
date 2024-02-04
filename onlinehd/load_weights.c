@@ -10,7 +10,7 @@ int load_bin(char *path, char *arr, size_t data_size, size_t n);
 
 int main() {
     float weights[CLASSES][DIM];
-    if (load_bin("../bin/weights.bin", (char*)weights, 4, CLASSES*DIM) == 1) {
+    if (load_bin("bin/weights.bin", (char*)weights, 4, CLASSES*DIM) == 1) {
         return 1;
     }
     

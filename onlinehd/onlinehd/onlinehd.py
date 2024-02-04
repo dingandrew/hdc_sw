@@ -137,7 +137,7 @@ class OnlineHD(object):
             lr : float = 0.035,
             epochs : int = 120,
             batch_size : Union[int, None, float] = 1024,
-            one_pass_fit : bool = True,
+            one_pass_fit : bool = False,
             bootstrap : Union[float, str] = 0.01):
         '''
         Starts learning process using datapoints `x` as input points and `y`

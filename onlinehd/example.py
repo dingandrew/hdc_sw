@@ -71,9 +71,9 @@ def main():
     yhat_test = model(x_test)
     acc = (y == yhat).float().mean()
     acc_test = (y_test == yhat_test).float().mean()
-    print(f'{acc = :6f}')
-    print(f'{acc_test = :6f}')
-    print(f'{t = :6f}')
+    print("ACCURACY", acc)
+    print("ACCURACY TEST", acc_test)
+    print("TIME", t)
 
     print("Saving model attributes...")
     generate_bin_2d("./bin/weights.bin", model.model)
