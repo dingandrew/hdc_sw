@@ -6,3 +6,12 @@ python -m venv env
 
 pip install -r requirements.txt
 
+
+## To Run the Vicuna Sanoty Test
+
+source env_setup.sh
+
+cd vicuna/test
+
+make mul COMPILER=gcc
+
