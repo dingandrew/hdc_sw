@@ -10,9 +10,9 @@ SW_DIR      := ../vicuna/sw
 PROG        := test-vicuna
 OBJ         := test_main.o encoder.o onlinehd.o spatial.o fasthd.o
 
-RISCV_CC    := /home/echan14/hdc_sw/riscv/bin/riscv32-unknown-elf-gcc
-RISCV_DUMP  := /home/echan14/hdc_sw/riscv/bin/riscv32-unknown-elf-objdump
-RISCV_OBCP  := /home/echan14/hdc_sw/riscv/bin/riscv32-unknown-elf-objcopy
+RISCV_CC    := riscv32-unknown-elf-gcc
+RISCV_DUMP  := riscv32-unknown-elf-objdump
+RISCV_OBCP  := riscv32-unknown-elf-objcopy
 ARCH        := rv32imv
 LD_SCRIPT   := $(SW_DIR)/link.ld
 
@@ -65,7 +65,7 @@ clean:
 include $(SW_DIR)/toolchain.mk
 
 sim: $(PROG).vmem
-	echo /home/echan14/hdc_sw/c_src/$(PROG).vmem > progs.txt
-	make -f /home/echan14/hdc_sw/vicuna/sim/Makefile \
+	echo $(CURDIR)/$(PROG).vmem > progs.txt
+	make -f $(CURDIR)/../vicuna/sim/Makefile \
 		PROG_PATHS=progs.txt \
 		questa VPROC_CONFIG=dual VREG_W=512
