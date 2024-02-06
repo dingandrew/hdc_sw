@@ -109,9 +109,10 @@ module vproc_tb #(
 
         fd1 = $fopen(PROG_PATHS_LIST, "r");
         for (int i = 0; !$feof(fd1); i++) begin
+            integer code;
             rst = 1'b1;
 
-            $fgets(line, fd1);
+            code = $fgets(line, fd1);
 
             ref_path   = "/dev/null";
             ref_start  = 0;
