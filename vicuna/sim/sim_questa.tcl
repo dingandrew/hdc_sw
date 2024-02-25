@@ -60,14 +60,14 @@ vlib work
 
 foreach file $src_list {vlog -work work $file +define+$main_core +incdir+$prim+$dv_utils}
 
-vopt +acc vproc_tb -o vproc_tb_opt -debugdb -G VMEM_W=$VMEM_W -suppress 7061    \
+vopt +acc vproc_tb -o vproc_tb_opt -designfile designfile.db -debug -access=rw+/ -debugdb -G VMEM_W=$VMEM_W -suppress 7061    \
      -G MEM_W=$MEM_W -G MEM_SZ=$MEM_SZ -G MEM_LATENCY=$MEM_LATENCY \
      -G ICACHE_SZ=$ICACHE_SZ -G ICACHE_LINE_W=$ICACHE_LINE_W       \
      -G DCACHE_SZ=$DCACHE_SZ -G DCACHE_LINE_W=$DCACHE_LINE_W       \
      -G VREG_TYPE=$VREG_TYPE -G MUl_TYPE=$MUL_TYPE                 \
      +define+$main_core -G PROG_PATHS_LIST=$prog_paths_var
 
-vsim -work work vproc_tb_opt
+vsim -work work vproc_tb_opt -logfile ./simulation.log -qwavedb=+signal+memory+msgmode=both 
 
 # add all signals
 add wave -r /*

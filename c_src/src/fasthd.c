@@ -1,6 +1,7 @@
 #include "../includes/fasthd.h"
+#include <stdlib.h>
 
-float cos(float* x, float* xs, float* out, int x_size, int xs_size) {
+float fasthd_cos(float* x, float* xs, float* out, int x_size, int xs_size) {
     // Calculate dot product
     float dot_product = 0.0;
     for (int i = 0; i < x_size; i++) {
@@ -27,13 +28,13 @@ float cos(float* x, float* xs, float* out, int x_size, int xs_size) {
 }
 
 float* onepass(float* x, float* y, float* m, int n, int c, float lr, int x_size) {
-    float* scores = new float[c];
+    float* scores = malloc(sizeof(float)*c);
     for (int i = 0; i < n; i++) {
         float* spl = &x[i * x_size];
         int lbl = y[i];
         
         // Calculate cosine similarity
-        cos(spl, m, scores, x_size, c);
+        fasthd_cos(spl, m, scores, x_size, c);
         
         // Find the index of the minimum score
         int prd = 0;
@@ -51,6 +52,7 @@ float* onepass(float* x, float* y, float* m, int n, int c, float lr, int x_size)
             m[prd * x_size + j] -= lr * spl[j] * scores[prd];
         }
     }
+    free(scores);
     
     return m;
 }
