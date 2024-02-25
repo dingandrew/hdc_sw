@@ -66,6 +66,10 @@ include $(SW_DIR)/toolchain.mk
 
 sim: $(PROG).vmem
 	echo $(CURDIR)/$(PROG).vmem > progs.txt
+	mkdir -p $$PWD/sim.out
 	make -f $(CURDIR)/../vicuna/sim/Makefile \
+		questa \
+		PROJ_DIR=$$PWD/sim.out
 		PROG_PATHS=progs.txt \
-		questa VPROC_CONFIG=dual VREG_W=512
+		VPROC_CONFIG=dual \
+	    VREG_W=512 \
