@@ -1,13 +1,7 @@
+`define DELAY 0.4ns
+// `define DELAY 0
+
 // Memory wrapper around tsmc dual port memory
-// potential problems
-// I am assuming a one cycle access time for memory and there is no indication I've found
-//   from ports or the documentation that says otherwise, but the logic would need to change
-//   if this is not the case
-// The documentation waveform for a read access looks to have a one cycle latency between
-//   when inputs are latched and when the read data is ready, but that does not exist in
-//   simulation when I run it
-// I have not handled the dual port memory, I have just disabled one port for now becuase I'm
-//   not really sure how to use the second port
 module memory_wrapper # (
   DATA_WIDTH                        = 32,
   ADDR_WIDTH                        = 32,
@@ -57,13 +51,13 @@ module memory_wrapper # (
 
   // adding delays to signals to pass hold time check in tsmc memory
   always_comb begin
-    data_addr_aw <= #1ns data_addr_a[M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)-1:$clog2(DATA_WIDTH/8)];
-    data_wdata_aw <= #1ns data_wdata_a;
-    data_we_aw <= #1ns data_we_a;
+    data_addr_aw <= #`DELAY data_addr_a[M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)-1:$clog2(DATA_WIDTH/8)];
+    data_wdata_aw <= #`DELAY data_wdata_a;
+    data_we_aw <= #`DELAY data_we_a;
 
-    data_addr_bw <= #1ns data_addr_b[M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)-1:$clog2(DATA_WIDTH/8)];
-    data_wdata_bw <= #1ns data_wdata_b;
-    data_we_bw <= #1ns data_we_b;
+    data_addr_bw <= #`DELAY data_addr_b[M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)-1:$clog2(DATA_WIDTH/8)];
+    data_wdata_bw <= #`DELAY data_wdata_b;
+    data_we_bw <= #`DELAY data_we_b;
   end
 
   // use byte enable to get bit write enable
@@ -71,16 +65,16 @@ module memory_wrapper # (
   for (i = 0; i < DATA_WIDTH/8; i++) begin
     for (j = 0; j < 8; j++) begin
       always_comb begin
-        bweba[i*8+j] <= #1ns ~data_be_a[i];
-        bwebb[i*8+j] <= #1ns ~data_be_b[i];
+        bweba[i*8+j] <= #`DELAY ~data_be_a[i];
+        bwebb[i*8+j] <= #`DELAY ~data_be_b[i];
       end
     end
   end
 
   // chip enable also gets latched at clk edge
   always_comb begin
-    ceba <= #1ns ~data_req_a;
-    cebb <= #1ns ~data_req_b;
+    ceba <= #`DELAY ~data_req_a;
+    cebb <= #`DELAY ~data_req_b;
   end
 
 
@@ -105,16 +99,16 @@ module memory_wrapper # (
   // data_gnt indicates next clock cycle inputs can change so at the clock edge, inputs
   //   will be latched by the memory already
   always_comb begin
-    data_gnt_a <= #1ns data_req_a; 
-    data_gnt_b <= #1ns data_req_b; 
+    data_gnt_a <= data_req_a; 
+    data_gnt_b <= data_req_b; 
   end
 
   // data is ready clock cycle after the data_req is made
   always_ff @(posedge clk) begin
     // data is read clk cycle after data_req made
     // so it should be latched on clk edges
-    data_rvalid_a <= #1ns data_req_a;
-    data_rvalid_b <= #1ns data_req_b;
+    data_rvalid_a <= data_req_a;
+    data_rvalid_b <= data_req_b;
   end
 
   // (todo) handle same addr access error
@@ -138,7 +132,7 @@ module memory_wrapper # (
   endgenerate
 
   always_ff @ (posedge clk) begin
-    data_err_a <= #1ns data_err_next_a;
-    data_err_b <= #1ns data_err_next_b;
+    data_err_a <= data_err_next_a;
+    data_err_b <= data_err_next_b;
   end
 endmodule

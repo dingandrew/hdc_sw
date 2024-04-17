@@ -67,7 +67,7 @@ module vproc_tb #(
         .data_rvalid_a(mem_rvalid),
         .data_err_a(mem_err),
         .data_rdata_a(mem_rdata),
-        .data_gnt_a()
+        .data_gnt_a(),
         .data_req_b('0),
         .data_addr_b('0),
         .data_we_b('0),
@@ -128,7 +128,6 @@ module vproc_tb #(
 
     integer fd1, fd2, cnt, ref_start, ref_end, dump_start, dump_end;
     string  line, prog_path, ref_path, dump_path;
-    logic [256*8:1] path;
     initial begin
         done = 1'b0;
 
@@ -153,10 +152,7 @@ module vproc_tb #(
             end
 
             $readmemh(prog_path, mem.mem.MX.mem);
-            // $cast(path, prog_path);
-            // path = {>>{prog_path}};
-            // mem.mem.preloadData(path);
-            // maybe use tsmc memory task preloadData(prog_path)
+            // $readmemh(prog_path, mem);
 
             // fd2 = $fopen(ref_path, "w");
             // for (int j = ref_start / (MEM_W/8); j < ref_end / (MEM_W/8); j++) begin
