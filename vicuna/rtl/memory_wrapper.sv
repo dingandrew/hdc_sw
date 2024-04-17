@@ -1,5 +1,5 @@
 // `define DELAY 0.13ns // for port b
-`define DELAY 0.1ns // for port a
+`define DELAY 0.088ns // for port a
 // `define DELAY 0
 
 // Memory wrapper around tsmc dual port memory
