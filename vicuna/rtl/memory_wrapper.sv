@@ -1,7 +1,3 @@
-// `define DELAY 0.13ns // for port b
-`define DELAY 0.088ns // for port a
-// `define DELAY 0
-
 // Memory wrapper around tsmc dual port memory
 module memory_wrapper # (
   DATA_WIDTH                        = 32,
@@ -11,6 +7,7 @@ module memory_wrapper # (
   logic [ADDR_WIDTH-1:0] ADDR_MAP_B = '0
 ) (
   input  logic                    clk,
+  input  logic                    rst,
   input  logic                    data_req_a,
   input  logic [ADDR_WIDTH-1:0]   data_addr_a,
   input  logic                    data_we_a,
@@ -50,34 +47,42 @@ module memory_wrapper # (
   logic [DATA_WIDTH-1:0] data_wdata_bw;
   logic data_we_bw;
 
-  // adding delays to signals to pass hold time check in tsmc memory
-  always_comb begin
-    data_addr_aw <= #`DELAY data_addr_a[M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)-1:$clog2(DATA_WIDTH/8)];
-    data_wdata_aw <= #`DELAY data_wdata_a;
-    data_we_aw <= #`DELAY data_we_a;
+  // latch inputs at clk negedge to avoid hold violations
+  always_ff @(negedge clk) begin
+    if (!rst) begin
+      data_addr_aw <= '0;
+      data_wdata_aw <= '0;
+      data_we_aw <= '0;
+      data_addr_bw <= '0;
+      data_wdata_bw <= '0;
+      data_we_bw <= '0;
 
-    data_addr_bw <= #`DELAY data_addr_b[M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)-1:$clog2(DATA_WIDTH/8)];
-    data_wdata_bw <= #`DELAY data_wdata_b;
-    data_we_bw <= #`DELAY data_we_b;
+      ceba <= '1;
+      cebb <= '1;
+    end else begin
+      data_addr_aw <= data_addr_a[M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)-1:$clog2(DATA_WIDTH/8)];
+      data_wdata_aw <= data_wdata_a;
+      data_we_aw <= data_we_a;
+
+      data_addr_bw <= data_addr_b[M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)-1:$clog2(DATA_WIDTH/8)];
+      data_wdata_bw <= data_wdata_b;
+      data_we_bw <= data_we_b;
+
+      ceba <= ~data_req_a;
+      cebb <= ~data_req_b;
+    end
   end
 
   // use byte enable to get bit write enable
   genvar i, j;
   for (i = 0; i < DATA_WIDTH/8; i++) begin
     for (j = 0; j < 8; j++) begin
-      always_comb begin
-        bweba[i*8+j] <= #`DELAY ~data_be_a[i];
-        bwebb[i*8+j] <= #`DELAY ~data_be_b[i];
+      always_ff @(negedge clk) begin
+        bweba[i*8+j] <= ~data_be_a[i];
+        bwebb[i*8+j] <= ~data_be_b[i];
       end
     end
   end
-
-  // chip enable also gets latched at clk edge
-  always_comb begin
-    ceba <= #`DELAY ~data_req_a;
-    cebb <= #`DELAY ~data_req_b;
-  end
-
 
   // memory instantiation
   // currently only using one memory port

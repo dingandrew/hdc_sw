@@ -58,7 +58,7 @@ module vproc_tb #(
     );
 
     memory_wrapper #(.DATA_WIDTH(32), .M_ADDR_WIDTH(16)) mem (
-        .clk(clk),
+        .clk(clk), .rst(~rst),
         .data_req_a(mem_req),
         .data_addr_a(mem_addr),
         .data_we_a(mem_we),
