@@ -154,13 +154,13 @@ module vproc_tb #(
             $readmemh(prog_path, mem.mem.MX.mem);
             // $readmemh(prog_path, mem);
 
-            // fd2 = $fopen(ref_path, "w");
-            // for (int j = ref_start / (MEM_W/8); j < ref_end / (MEM_W/8); j++) begin
-            //     for (int k = 0; k < MEM_W/32; k++) begin
-            //         $fwrite(fd2, "%x\n", mem[j][k*32 +: 32]);
-            //     end
-            // end
-            // $fclose(fd2);
+            fd2 = $fopen(ref_path, "w");
+            for (int j = ref_start / (MEM_W/8); j < ref_end / (MEM_W/8); j++) begin
+                for (int k = 0; k < MEM_W/32; k++) begin
+                    $fwrite(fd2, "%x\n", mem.mem.MX.mem[j][k*32 +: 32]);
+                end
+            end
+            $fclose(fd2);
 
             // reset for 10 cycles
             #100
@@ -178,13 +178,13 @@ module vproc_tb #(
                 end
             end
 
-            // fd2 = $fopen(dump_path, "w");
-            // for (int j = dump_start / (MEM_W/8); j < dump_end / (MEM_W/8); j++) begin
-            //     for (int k = 0; k < MEM_W/32; k++) begin
-            //         $fwrite(fd2, "%x\n", mem[j][k*32 +: 32]);
-            //     end
-            // end
-            // $fclose(fd2);
+            fd2 = $fopen(dump_path, "w");
+            for (int j = dump_start / (MEM_W/8); j < dump_end / (MEM_W/8); j++) begin
+                for (int k = 0; k < MEM_W/32; k++) begin
+                    $fwrite(fd2, "%x\n", mem.mem.MX.mem[j][k*32 +: 32]);
+                end
+            end
+            $fclose(fd2);
         end
         $fclose(fd1);
         done = 1'b1;
