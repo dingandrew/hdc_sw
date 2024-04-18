@@ -60,6 +60,7 @@ module memory_wrapper # (
       ceba <= '1;
       cebb <= '1;
     end else begin
+      // memory address assumes that the processor is using byte addressing
       data_addr_aw <= data_addr_a[M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)-1:$clog2(DATA_WIDTH/8)];
       data_wdata_aw <= data_wdata_a;
       data_we_aw <= data_we_a;
@@ -89,8 +90,7 @@ module memory_wrapper # (
     end
   end
 
-  // memory instantiation
-  // currently only using one memory port
+  // sram instantiation
   TSDN28HPCPUHDB512X64M4MWA mem (
     .CLK(clk),
     .RTSEL(2'b0), .WTSEL(2'b0), .PTSEL(2'b0),
@@ -106,7 +106,6 @@ module memory_wrapper # (
   
   // OUTPUTS
 
-  // fine if no setup/hold violations
   // data_gnt indicates next clock cycle inputs can change so at the clock edge, inputs
   //   will be latched by the memory already
   always_comb begin
@@ -127,13 +126,12 @@ module memory_wrapper # (
     end
   end
 
-  // (todo) handle same addr access error
   // handle addr mapping only if addr is wider than memory addr
-  // error code is only checked on data_rvalid so I can just have it always assigned to
+  // error code is only checked on data_rvalid high so I can just have it always assigned to
   generate
     if (ADDR_WIDTH > M_ADDR_WIDTH) begin
         // error when address map is different from expected
-        // error when two port same addr access and one of them is a write access
+        // error when two port same addr access and at least one of them is a write access
         assign data_err_next_a = (ADDR_MAP_A[ADDR_WIDTH-1:M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)] != data_addr_a[ADDR_WIDTH-1:M_ADDR_WIDTH+$clog2(DATA_WIDTH/8)]
                 || (data_addr_aw == data_addr_bw && ~ceba && ~cebb && (data_we_a || data_we_b))
         );
@@ -147,6 +145,7 @@ module memory_wrapper # (
     end
   endgenerate
 
+  // set error output
   always_ff @ (posedge clk or negedge rst) begin
     if (!rst) begin
       data_err_a <= 0;
