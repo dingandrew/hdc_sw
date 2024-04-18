@@ -78,8 +78,13 @@ module memory_wrapper # (
   for (i = 0; i < DATA_WIDTH/8; i++) begin
     for (j = 0; j < 8; j++) begin
       always_ff @(negedge clk) begin
-        bweba[i*8+j] <= ~data_be_a[i];
-        bwebb[i*8+j] <= ~data_be_b[i];
+        if (!rst) begin
+          bweba[i*8+j] <= '0;
+          bweba[i*8+j] <= '0;
+        end else begin
+          bweba[i*8+j] <= ~data_be_a[i];
+          bwebb[i*8+j] <= ~data_be_b[i];
+        end
       end
     end
   end
@@ -110,11 +115,16 @@ module memory_wrapper # (
   end
 
   // data is ready clock cycle after the data_req is made
-  always_ff @(posedge clk) begin
+  always_ff @(posedge clk or negedge rst) begin
     // data is read clk cycle after data_req made
     // so it should be latched on clk edges
-    data_rvalid_a <= data_req_a;
-    data_rvalid_b <= data_req_b;
+    if (!rst) begin
+      data_rvalid_a <= 0;
+      data_rvalid_b <= 0;
+    end else begin
+      data_rvalid_a <= data_req_a;
+      data_rvalid_b <= data_req_b;
+    end
   end
 
   // (todo) handle same addr access error
@@ -137,8 +147,13 @@ module memory_wrapper # (
     end
   endgenerate
 
-  always_ff @ (posedge clk) begin
-    data_err_a <= data_err_next_a;
-    data_err_b <= data_err_next_b;
+  always_ff @ (posedge clk or negedge rst) begin
+    if (!rst) begin
+      data_err_a <= 0;
+      data_err_b <= 0;
+    end else begin
+      data_err_a <= data_err_next_a;
+      data_err_b <= data_err_next_b;
+    end
   end
 endmodule
