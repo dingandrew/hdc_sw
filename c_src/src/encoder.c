@@ -1,5 +1,5 @@
 #include "../includes/encoder.h"
-#include <riscv_vector.h>
+// #include <riscv_vector.h>
 
 void create_encoder(Encoder *encoder) 
 {
@@ -43,7 +43,7 @@ void encoder_call(Encoder* encoder, float x[][FEATURES], int n, float h[][DIM])
     int bsize = ceil(0.01 * n);
     float temp[bsize * DIM];
 
-    size_t vlmax = __riscv_vsetvlmax_e32m1();  // Set maximum vector length for 32-bit single precision
+    // size_t vlmax = __riscv_vsetvlmax_e32m1();  // Set maximum vector length for 32-bit single precision
 
     for (int i = 0; i < n; i += bsize) 
     {
@@ -56,40 +56,40 @@ void encoder_call(Encoder* encoder, float x[][FEATURES], int n, float h[][DIM])
         }
 
         // Matrix multiplication
-        // for (int j = 0; j < current_batch_size; j++) 
-        // {
-        //     for (int k = 0; k < DIM; k++) 
-        //     {
-        //         for (int l = 0; l < FEATURES; l++) 
-        //         {
-        //             temp[j * DIM + k] += x[i + j][l] * encoder->basis[k * FEATURES + l];
-        //         }
-        //     }
-        // }
-        
-        // Matrix multiplication with RVV Intrincs
-        for (int j = 0; j < current_batch_size; j++) {
-            for (int k = 0; k < DIM; k++) {
-                float *ptr_x = &x[i + j][0];
-                float *ptr_basis = &encoder->basis[k * FEATURES];
-                int l = FEATURES;
-                vfloat32m1_t vec_s = __riscv_vfmv_v_f_f32m1(0.0f, vlmax); // Initialize the sum vector to zero
-                vfloat32m1_t vec_zero = __riscv_vfmv_v_f_f32m1(0.0f, vlmax);
-                for (size_t vl; l > 0; l -= vl, ptr_x += vl, ptr_basis += vl) {
-                    vl = __riscv_vsetvl_e32m1(l); // Set the vector length for the remaining elements
-                    
-                    vfloat32m1_t vec_x = __riscv_vle32_v_f32m1(ptr_x, vl);
-                    vfloat32m1_t vec_basis = __riscv_vle32_v_f32m1(ptr_basis, vl);
-                    
-                    vec_s = __riscv_vfmacc_vv_f32m1(vec_s, vec_x, vec_basis, vl);
+        for (int j = 0; j < current_batch_size; j++) 
+        {
+            for (int k = 0; k < DIM; k++) 
+            {
+                for (int l = 0; l < FEATURES; l++) 
+                {
+                    temp[j * DIM + k] += x[i + j][l] * encoder->basis[k * FEATURES + l];
                 }
-                
-                vfloat32m1_t vec_sum;
-                vec_sum = __riscv_vfredusum_vs_f32m1_f32m1(vec_s, vec_zero, vlmax);
-                float sum = __riscv_vfmv_f_s_f32m1_f32(vec_sum);
-                temp[j * DIM + k] = sum;
             }
         }
+        
+        // // Matrix multiplication with RVV Intrincs
+        // for (int j = 0; j < current_batch_size; j++) {
+        //     for (int k = 0; k < DIM; k++) {
+        //         float *ptr_x = &x[i + j][0];
+        //         float *ptr_basis = &encoder->basis[k * FEATURES];
+        //         int l = FEATURES;
+        //         vfloat32m1_t vec_s = __riscv_vfmv_v_f_f32m1(0.0f, vlmax); // Initialize the sum vector to zero
+        //         vfloat32m1_t vec_zero = __riscv_vfmv_v_f_f32m1(0.0f, vlmax);
+        //         for (size_t vl; l > 0; l -= vl, ptr_x += vl, ptr_basis += vl) {
+        //             vl = __riscv_vsetvl_e32m1(l); // Set the vector length for the remaining elements
+                    
+        //             vfloat32m1_t vec_x = __riscv_vle32_v_f32m1(ptr_x, vl);
+        //             vfloat32m1_t vec_basis = __riscv_vle32_v_f32m1(ptr_basis, vl);
+                    
+        //             vec_s = __riscv_vfmacc_vv_f32m1(vec_s, vec_x, vec_basis, vl);
+        //         }
+                
+        //         vfloat32m1_t vec_sum;
+        //         vec_sum = __riscv_vfredusum_vs_f32m1_f32m1(vec_s, vec_zero, vlmax);
+        //         float sum = __riscv_vfmv_f_s_f32m1_f32(vec_sum);
+        //         temp[j * DIM + k] = sum;
+        //     }
+        // }
 
         // Applying cosine and sine functions
         for (int j = 0; j < current_batch_size; j++) 
