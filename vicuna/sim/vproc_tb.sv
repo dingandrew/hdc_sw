@@ -14,13 +14,15 @@ module vproc_tb #(
         parameter int unsigned DCACHE_SZ       = 0,   // data cache size in bytes
         parameter int unsigned DCACHE_LINE_W   = 512  // data cache line width in bits
     );
+    timeunit 1ns;
+    timeprecision 1ps;
 
     logic clk, rst;
     always begin
         clk = 1'b0;
-        #5;
+        #5ns;
         clk = 1'b1;
-        #5;
+        #5ns;
     end
 
     logic        mem_req;
@@ -55,49 +57,71 @@ module vproc_tb #(
         .pend_vreg_wr_map_o (                        )
     );
 
+    memory_wrapper #(.DATA_WIDTH(32), .M_ADDR_WIDTH(16)) mem (
+        .clk(clk), .rst(~rst),
+        .data_req_a(mem_req),
+        .data_addr_a(mem_addr),
+        .data_we_a(mem_we),
+        .data_be_a(mem_be),
+        .data_wdata_a(mem_wdata),
+        .data_rvalid_a(mem_rvalid),
+        .data_err_a(mem_err),
+        .data_rdata_a(mem_rdata),
+        .data_gnt_a(),
+        .data_req_b('0),
+        .data_addr_b('0),
+        .data_we_b('0),
+        .data_be_b('0),
+        .data_wdata_b('0),
+        .data_rvalid_b(),
+        .data_err_b(),
+        .data_rdata_b(),
+        .data_gnt_b()
+    );
+
     // memory
-    logic [MEM_W-1:0]                    mem[MEM_SZ/(MEM_W/8)];
-    logic [$clog2(MEM_SZ/(MEM_W/8))-1:0] mem_idx;
-    assign mem_idx = mem_addr[$clog2(MEM_SZ)-1 : $clog2(MEM_W/8)];
-    // latency pipeline
-    logic        mem_rvalid_queue[MEM_LATENCY];
-    logic [31:0] mem_rdata_queue [MEM_LATENCY];
-    logic        mem_err_queue   [MEM_LATENCY];
-    always_ff @(posedge clk) begin
-        if (mem_req & mem_we) begin
-            for (int i = 0; i < MEM_W/8; i++) begin
-                if (mem_be[i]) begin
-                    mem[mem_idx][i*8 +: 8] <= mem_wdata[i*8 +: 8];
-                end
-            end
-        end
-        for (int i = 1; i < MEM_LATENCY; i++) begin
-            if (i == 1) begin
-                mem_rvalid_queue[i] <= mem_req;
-                mem_rdata_queue [i] <= mem[mem_idx];
-                mem_err_queue   [i] <= mem_addr[31:$clog2(MEM_SZ)] != '0;
-            end else begin
-                mem_rvalid_queue[i] <= mem_rvalid_queue[i-1];
-                mem_rdata_queue [i] <= mem_rdata_queue [i-1];
-                mem_err_queue   [i] <= mem_err_queue   [i-1];
-            end
-        end
-        if ((MEM_LATENCY) == 1)begin
-            mem_rvalid <= mem_req;
-            mem_rdata  <= mem[mem_idx];
-            mem_err    <= mem_addr[31:$clog2(MEM_SZ)] != '0;
-        end else begin
-            mem_rvalid <= mem_rvalid_queue[MEM_LATENCY-1];
-            mem_rdata  <= mem_rdata_queue [MEM_LATENCY-1];
-            mem_err    <= mem_err_queue   [MEM_LATENCY-1];
-        end
-        for (int i = 0; i < MEM_SZ; i++) begin
-            // set the don't care values in the memory to 0 during the first rising edge
-            if ($isunknown(mem[i]) & ($time < 10)) begin
-                mem[i] <= '0;
-            end
-        end
-    end
+    // logic [MEM_W-1:0]                    mem[MEM_SZ/(MEM_W/8)];
+    // logic [$clog2(MEM_SZ/(MEM_W/8))-1:0] mem_idx;
+    // assign mem_idx = mem_addr[$clog2(MEM_SZ)-1 : $clog2(MEM_W/8)];
+    // // latency pipeline
+    // logic        mem_rvalid_queue[MEM_LATENCY];
+    // logic [31:0] mem_rdata_queue [MEM_LATENCY];
+    // logic        mem_err_queue   [MEM_LATENCY];
+    // always_ff @(posedge clk) begin
+    //     if (mem_req & mem_we) begin
+    //         for (int i = 0; i < MEM_W/8; i++) begin
+    //             if (mem_be[i]) begin
+    //                 mem[mem_idx][i*8 +: 8] <= mem_wdata[i*8 +: 8];
+    //             end
+    //         end
+    //     end
+    //     for (int i = 1; i < MEM_LATENCY; i++) begin
+    //         if (i == 1) begin
+    //             mem_rvalid_queue[i] <= mem_req;
+    //             mem_rdata_queue [i] <= mem[mem_idx];
+    //             mem_err_queue   [i] <= mem_addr[31:$clog2(MEM_SZ)] != '0;
+    //         end else begin
+    //             mem_rvalid_queue[i] <= mem_rvalid_queue[i-1];
+    //             mem_rdata_queue [i] <= mem_rdata_queue [i-1];
+    //             mem_err_queue   [i] <= mem_err_queue   [i-1];
+    //         end
+    //     end
+    //     if ((MEM_LATENCY) == 1)begin
+    //         mem_rvalid <= mem_req;
+    //         mem_rdata  <= mem[mem_idx];
+    //         mem_err    <= mem_addr[31:$clog2(MEM_SZ)] != '0;
+    //     end else begin
+    //         mem_rvalid <= mem_rvalid_queue[MEM_LATENCY-1];
+    //         mem_rdata  <= mem_rdata_queue [MEM_LATENCY-1];
+    //         mem_err    <= mem_err_queue   [MEM_LATENCY-1];
+    //     end
+    //     for (int i = 0; i < MEM_SZ; i++) begin
+    //         // set the don't care values in the memory to 0 during the first rising edge
+    //         if ($isunknown(mem[i]) & ($time < 10)) begin
+    //             mem[i] <= '0;
+    //         end
+    //     end
+    // end
 
     logic prog_end, done;
     assign prog_end = mem_req & (mem_addr == '0);
@@ -127,12 +151,13 @@ module vproc_tb #(
                 continue;
             end
 
-            $readmemh(prog_path, mem);
+            $readmemh(prog_path, mem.mem.MX.mem);
+            // $readmemh(prog_path, mem);
 
             fd2 = $fopen(ref_path, "w");
             for (int j = ref_start / (MEM_W/8); j < ref_end / (MEM_W/8); j++) begin
                 for (int k = 0; k < MEM_W/32; k++) begin
-                    $fwrite(fd2, "%x\n", mem[j][k*32 +: 32]);
+                    $fwrite(fd2, "%x\n", mem.mem.MX.mem[j][k*32 +: 32]);
                 end
             end
             $fclose(fd2);
@@ -143,6 +168,9 @@ module vproc_tb #(
 
             // wait for completion (i.e. request of instr mem addr 0x00000000)
             //@(posedge prog_end);
+
+            // #100ns;
+
             while (1) begin
                 @(posedge clk);
                 if (prog_end) begin
@@ -153,7 +181,7 @@ module vproc_tb #(
             fd2 = $fopen(dump_path, "w");
             for (int j = dump_start / (MEM_W/8); j < dump_end / (MEM_W/8); j++) begin
                 for (int k = 0; k < MEM_W/32; k++) begin
-                    $fwrite(fd2, "%x\n", mem[j][k*32 +: 32]);
+                    $fwrite(fd2, "%x\n", mem.mem.MX.mem[j][k*32 +: 32]);
                 end
             end
             $fclose(fd2);

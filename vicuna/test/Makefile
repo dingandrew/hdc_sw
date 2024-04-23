@@ -86,7 +86,7 @@ $(TESTS_ALL): %: $$(addsuffix .vmem,$$(basename $$(shell [ -d % ] && ls %/*.S ||
 	        continue;                                                         \
 	    fi;                                                                   \
 	    printf "\033[0;34m[CONF]\033[0;0m $@ $$line\n";                       \
-	    sim_dir=`mktemp -d`;                                                  \
+	    sim_dir="$(TEST_DIR)";                                                  \
 	    echo "[INFO] Writing temporary files to $${sim_dir}";                 \
 	    make -f $(TEST_DIR)/../sim/Makefile $(SIMULATOR) PROJ_DIR=$$sim_dir   \
 	        $$line PROG_PATHS=progs.txt SIM_ABORT_CYCLES=10000 ENABLE_SVA=1   \

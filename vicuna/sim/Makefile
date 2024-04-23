@@ -20,7 +20,8 @@ VSIM       ?= vsim
 
 # project directory
 PROJ_DIR_TMP := $(shell mktemp -d)
-PROJ_DIR     ?= $(PROJ_DIR_TMP)
+# PROJ_DIR     ?= $(PROJ_DIR_TMP)
+PROJ_DIR = $(SIM_DIR)/work
 
 # select the core to use as main processor (defaults to Ibex)
 CORE     ?= ibex
