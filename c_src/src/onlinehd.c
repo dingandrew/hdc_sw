@@ -29,24 +29,7 @@ void OnlineHD_call(OnlineHD* onlineHD, float x[][FEATURES],int n,float h[][DIM],
     }
 }
 
-// int OnlineHD_predict(OnlineHD* onlineHD, float* x, bool encoded) {
-//     return OnlineHD_call(onlineHD, x, encoded);
-// }
 
-// float* OnlineHD_probabilities(OnlineHD* onlineHD, float* x, bool encoded) {
-//     float* scores = OnlineHD_scores(onlineHD, x, encoded);
-//     float* probabilities = malloc(onlineHD->classes * sizeof(float));
-//     float sum = 0.0;
-//     for (int i = 0; i < onlineHD->classes; i++) {
-//         probabilities[i] = expf(scores[i]);
-//         sum += probabilities[i];
-//     }
-//     for (int i = 0; i < onlineHD->classes; i++) {
-//         probabilities[i] /= sum;
-//     }
-//     free(scores);
-//     return probabilities;
-// }
 //onlineHD: the object; x:input data; n:number of data points; h:encoded data; dist:cos sim;
 void OnlineHD_scores(OnlineHD* onlineHD, float x[][FEATURES], int n, float h[][DIM], float dist[][CLASSES], bool encoded) 
 {
