@@ -162,3 +162,7 @@ cython_debug/
 #
 #
 bin/
+test
+load_weights
+*.o
+*.txt
