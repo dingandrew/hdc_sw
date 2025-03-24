@@ -4,6 +4,10 @@ from example import load
 import onlinehd
 
 from data import generate_bin_2d, load_bin_2d, generate_bin_1d, load_bin_1d
+DIM = 128
+CLASSES = 5
+FEATURES = 784
+SAMPLES = 10
 
 # simple OnlineHD training
 def main():
@@ -12,9 +16,8 @@ def main():
     load_bin_2d('./bin/x.bin', x)
     y = torch.empty(5, dtype=torch.int)
     load_bin_1d('./bin/y.bin', y, 'i')
-    classes = 10
-    features = 784
-    model = onlinehd.OnlineHD(classes, features)
+
+    model = onlinehd.OnlineHD(CLASSES, FEATURES, DIM)
 
     if torch.cuda.is_available():
         x = x.cuda()

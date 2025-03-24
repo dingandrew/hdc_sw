@@ -1,9 +1,9 @@
 #include <stdio.h>
 
 
-#define CLASSES 10
-#define DIM     4000
-
+#define CLASSES 5
+#define DIM     128
+#define SAMPLES 10
 
 int load_bin(char *path, char *arr, size_t data_size, size_t n);
     

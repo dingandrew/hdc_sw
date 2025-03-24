@@ -44,7 +44,7 @@ class OnlineHD(object):
         >>> ypred.size()
         torch.Size([1000])
     '''
-    def __init__(self, classes : int, features : int, dim : int = 4000):
+    def __init__(self, classes : int, features : int, dim : int = 40000):
         self.classes = classes
         self.dim = dim
         self.encoder = Encoder(features, dim)

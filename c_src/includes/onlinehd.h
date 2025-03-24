@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 #define FEATURES 784
-#define CLASSES 10
-#define DIM 4000
+#define CLASSES 5
+#define DIM 128
 
 typedef struct {
     float basis[DIM * FEATURES];

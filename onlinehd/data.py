@@ -3,9 +3,9 @@ from onlinehd import OnlineHD
 import struct
 
 
-CLASSES = 10
+CLASSES = 5
 FEATURES = 784
-DIM = 4000
+DIM = 128
 
 
 def generate_data_header(path: str, n: int, x: torch.Tensor, y: torch.Tensor) -> None :

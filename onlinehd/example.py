@@ -11,6 +11,10 @@ import onlinehd
 
 from data import generate_bin_2d, generate_bin_1d
 
+DIM = 128
+CLASSES = 5
+SAMPLES = 10
+
 # loads simple mnist dataset
 def load():
     # fetches data
@@ -43,13 +47,37 @@ def main():
     pathlib.Path('./bin').mkdir(exist_ok=True)
     print('Loading...')
     x, x_test, y, y_test = load()
+
+
+    # Identify the unique classes in y
+    unique_classes = torch.unique(y)
+
+    # Select the first 5 classes
+    first_5_classes = unique_classes[:CLASSES]
+    
+    # Create boolean masks for train and test sets
+    mask_train = torch.isin(y, first_5_classes)
+    mask_test = torch.isin(y_test, first_5_classes)
+
+    # Filter to keep only the data from the first 5 classes
+    x = x[mask_train]
+    y = y[mask_train]
+    x_test = x_test[mask_test]
+    y_test = y_test[mask_test]
+    
+    # get datstet dimensions
     classes = y.unique().size(0)
+    print("Classes: ", classes)
+    if classes != CLASSES:
+        print("WRONG CLASSES: ", classes)
     features = x.size(1)
-    model = onlinehd.OnlineHD(classes, features)
+
+
+    model = onlinehd.OnlineHD(CLASSES, features, DIM)
 
     print('Saving dataset samples...')
-    x_view = x_test[0:100]
-    y_view = y_test[0:100]
+    x_view = x_test[0:SAMPLES]
+    y_view = y_test[0:SAMPLES]
     generate_bin_2d('./bin/x.bin', x_view)
     generate_bin_1d('./bin/y.bin', y_view, 'i')
 
